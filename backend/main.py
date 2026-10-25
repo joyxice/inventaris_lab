@@ -1,14 +1,23 @@
-from flask import Flask, redirect, render_template
+from flask import Flask, redirect, render_template, url_for
+import os
 
-app = Flask(__name__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.abspath(
+    os.path.join(BASE_DIR, "../frontend")
+)
+
+app = Flask(
+    __name__,
+    template_folder=FRONTEND_DIR
+            )
 
 @app.route('/')
-def main():
-    redirect('/login')
+def index():
+    return redirect(url_for('login'))
     
 @app.route('/login')
 def login():
-    render_template('frontend/login.html')
+    return render_template('login.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
