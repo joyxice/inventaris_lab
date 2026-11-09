@@ -13,119 +13,49 @@
 <body>
   <div class="app-shell">
     <aside class="sidebar">
-      <a class="brand" href="/">
-        <span class="brand-mark">L</span>
-        <span><strong>Lab Inventory</strong><small>Management System</small></span>
-      </a>
+      <a class="brand" href="/"><span class="brand-mark">L</span><span><strong>Lab Inventory</strong><small>Management System</small></span></a>
       <div class="nav-label">MENU UTAMA</div>
-      <nav>
-        <a class="nav-link active" href="#dashboard"><span class="nav-icon">▦</span> Dashboard</a>
-        <a class="nav-link" href="#inventory"><span class="nav-icon">▤</span> Data Inventaris</a>
-      </nav>
-      <div class="sidebar-bottom">
-        <div class="side-note">
-          <span class="note-dot"></span>
-          <div><strong>Database aktif</strong><small>SQLite · Local</small></div>
-        </div>
-        <small class="version">LAB INVENTORY · v1.0</small>
-      </div>
+      <nav><a class="nav-link active" href="#dashboard"><span class="nav-icon">▦</span> Dashboard</a><a class="nav-link" href="#inventory"><span class="nav-icon">▤</span> Data Inventaris</a></nav>
+      <div class="sidebar-bottom"><div class="side-note"><span class="note-dot"></span><div><strong>Database aktif</strong><small>SQLite · Local</small></div></div><small class="version">LAB INVENTORY · v1.1</small></div>
     </aside>
 
     <main class="main-content">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">LABORATORY MANAGEMENT</p>
-          <h1>Inventaris Laboratorium</h1>
-        </div>
-        <div class="topbar-right">
-          <span class="today" id="today"></span>
-          <span class="avatar">AD</span>
-        </div>
+        <div><p class="eyebrow">LABORATORY MANAGEMENT</p><h1>Inventaris Laboratorium</h1></div>
+        <div class="topbar-right"><span class="today" id="today"></span><div class="user-menu"><span class="avatar" id="userAvatar">AD</span><span class="username" id="currentUsername">Admin</span><button class="logout-btn" id="logoutBtn" title="Logout">Keluar ↗</button></div></div>
       </header>
 
       <section id="dashboard" class="section">
-        <div class="section-heading">
-          <div><h2>Ringkasan</h2><p>Pantau kondisi dan ketersediaan barang laboratorium.</p></div>
-          <span class="live-label"><i></i> Data terkini</span>
-        </div>
-
+        <div class="section-heading"><div><h2>Ringkasan</h2><p>Pantau kondisi dan ketersediaan barang laboratorium.</p></div><span class="live-label"><i></i> Data terkini</span></div>
         <div class="stats-grid">
-          <article class="stat-card">
-            <div class="stat-top"><span>Total jenis barang</span><span class="stat-icon purple">▤</span></div>
-            <strong id="totalItems">0</strong><small>Barang terdaftar</small>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span>Total stok</span><span class="stat-icon blue">▦</span></div>
-            <strong id="totalQuantity">0</strong><small>Unit barang tersedia</small>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span>Kategori</span><span class="stat-icon orange">◫</span></div>
-            <strong id="totalCategories">0</strong><small>Kategori inventaris</small>
-          </article>
-          <article class="stat-card">
-            <div class="stat-top"><span>Perlu perhatian</span><span class="stat-icon red">!</span></div>
-            <strong id="needsRepair">0</strong><small>Barang perlu perbaikan / rusak</small>
-          </article>
+          <article class="stat-card"><div class="stat-top"><span>Total jenis barang</span><span class="stat-icon purple">▤</span></div><strong id="totalItems">0</strong><small>Barang terdaftar</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Total stok</span><span class="stat-icon blue">▦</span></div><strong id="totalQuantity">0</strong><small>Unit barang tersedia</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Kategori</span><span class="stat-icon orange">◫</span></div><strong id="totalCategories">0</strong><small>Kategori inventaris</small></article>
+          <article class="stat-card"><div class="stat-top"><span>Perlu perhatian</span><span class="stat-icon red">!</span></div><strong id="needsRepair">0</strong><small>Barang perlu perbaikan / rusak</small></article>
         </div>
-
-        <div class="condition-panel">
-          <div><h3>Kondisi inventaris</h3><p>Jumlah jenis barang berdasarkan kondisi saat ini.</p></div>
-          <div class="condition-items">
-            <div class="condition-item"><span class="condition-dot good"></span><span>Baik</span><strong id="goodCount">0</strong></div>
-            <div class="condition-item"><span class="condition-dot repair"></span><span>Perlu perbaikan</span><strong id="repairCount">0</strong></div>
-          </div>
-        </div>
+        <div class="condition-panel"><div><h3>Kondisi inventaris</h3><p>Jumlah jenis barang berdasarkan kondisi saat ini.</p></div><div class="condition-items"><div class="condition-item"><span class="condition-dot good"></span><span>Baik</span><strong id="goodCount">0</strong></div><div class="condition-item"><span class="condition-dot repair"></span><span>Perlu perhatian</span><strong id="repairCount">0</strong></div></div></div>
       </section>
 
       <section id="inventory" class="section inventory-section">
-        <div class="section-heading inventory-heading">
-          <div><h2>Data Inventaris</h2><p>Kelola seluruh barang yang tercatat di laboratorium.</p></div>
-          <button class="btn btn-primary" id="addItemBtn"><span>＋</span> Tambah Barang</button>
-        </div>
-
-        <div class="toolbar">
-          <label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Cari nama atau kode barang..."></label>
-          <select id="conditionFilter" aria-label="Filter kondisi">
-            <option value="">Semua kondisi</option>
-            <option value="Baik">Baik</option>
-            <option value="Perlu Perbaikan">Perlu perbaikan</option>
-            <option value="Rusak">Rusak</option>
-          </select>
-          <button class="btn btn-ghost" id="refreshBtn">↻ <span>Refresh</span></button>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>KODE BARANG</th><th>NAMA BARANG</th><th>KATEGORI</th><th>STOK</th><th>LOKASI</th><th>KONDISI</th><th></th></tr></thead>
-            <tbody id="inventoryBody"><tr><td colspan="7" class="empty-state">Memuat data...</td></tr></tbody>
-          </table>
-        </div>
+        <div class="section-heading inventory-heading"><div><h2>Data Inventaris</h2><p>Kelola seluruh barang yang tercatat di laboratorium.</p></div><button class="btn btn-primary" id="addItemBtn"><span>＋</span> Tambah Barang</button></div>
+        <div class="toolbar"><label class="search-box"><span>⌕</span><input id="searchInput" type="search" placeholder="Cari nama atau kode barang..."></label><select id="conditionFilter" aria-label="Filter kondisi"><option value="">Semua kondisi</option><option value="Baik">Baik</option><option value="Perlu Perbaikan">Perlu perbaikan</option><option value="Rusak">Rusak</option></select><button class="btn btn-ghost" id="refreshBtn">↻ <span>Refresh</span></button></div>
+        <div class="table-wrap"><table><thead><tr><th>KODE BARANG</th><th>NAMA BARANG</th><th>KATEGORI</th><th>STOK</th><th>LOKASI</th><th>KONDISI</th><th></th></tr></thead><tbody id="inventoryBody"><tr><td colspan="7" class="empty-state">Memuat data...</td></tr></tbody></table></div>
         <div class="table-footer"><span id="itemCount">Menampilkan 0 barang</span><span>Data tersimpan secara lokal</span></div>
       </section>
       <footer>© 2026 Lab Inventory System <span>Dibuat untuk pengelolaan inventaris laboratorium.</span></footer>
     </main>
   </div>
 
-  <div class="modal-backdrop hidden" id="itemModal">
-    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-header"><div><p class="eyebrow">DATA INVENTARIS</p><h2 id="modalTitle">Tambah Barang</h2></div><button class="close-btn" id="closeModal" aria-label="Tutup">×</button></div>
-      <form id="itemForm">
-        <div class="form-grid">
-          <label>Kode inventaris <input name="code" required placeholder="Contoh: LAB-001"></label>
-          <label>Nama barang <input name="name" required placeholder="Nama barang"></label>
-          <label>Kategori <input name="category" required placeholder="Contoh: Elektronik"></label>
-          <label>Jumlah stok <input name="quantity" type="number" min="0" value="1" required></label>
-          <label>Satuan <input name="unit" required placeholder="Unit / buah / set"></label>
-          <label>Lokasi penyimpanan <input name="location" required placeholder="Contoh: Lemari A-1"></label>
-          <label class="full-width">Kondisi
-            <select name="condition" required><option value="Baik">Baik</option><option value="Perlu Perbaikan">Perlu Perbaikan</option><option value="Rusak">Rusak</option></select>
-          </label>
-          <label class="full-width">Catatan <textarea name="notes" rows="3" placeholder="Catatan tambahan (opsional)"></textarea></label>
-        </div>
-        <div class="modal-actions"><button type="button" class="btn btn-ghost" id="cancelModal">Batal</button><button type="submit" class="btn btn-primary" id="saveBtn">Simpan Barang</button></div>
-      </form>
-    </section>
-  </div>
+  <div class="modal-backdrop hidden" id="itemModal"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-header"><div><p class="eyebrow">DATA INVENTARIS</p><h2 id="modalTitle">Tambah Barang</h2></div><button class="close-btn" id="closeModal" aria-label="Tutup">×</button></div>
+    <form id="itemForm"><div class="form-grid">
+      <label>Kode inventaris <input name="code" required placeholder="Contoh: LAB-001"></label><label>Nama barang <input name="name" required placeholder="Nama barang"></label>
+      <label>Kategori <input name="category" required placeholder="Contoh: Elektronik"></label><label>Jumlah stok <input name="quantity" type="number" min="0" value="1" required></label>
+      <label>Satuan <input name="unit" required placeholder="Unit / buah / set"></label><label>Lokasi penyimpanan <input name="location" required placeholder="Contoh: Lemari A-1"></label>
+      <label class="full-width">Kondisi <select name="condition" required><option value="Baik">Baik</option><option value="Perlu Perbaikan">Perlu Perbaikan</option><option value="Rusak">Rusak</option></select></label>
+      <label class="full-width">Catatan <textarea name="notes" rows="3" placeholder="Catatan tambahan (opsional)"></textarea></label>
+    </div><div class="modal-actions"><button type="button" class="btn btn-ghost" id="cancelModal">Batal</button><button type="submit" class="btn btn-primary" id="saveBtn">Simpan Barang</button></div></form>
+  </section></div>
   <div class="toast" id="toast"></div>
   <script src="/js/app.js"></script>
 </body>

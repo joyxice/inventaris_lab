@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Login ke sistem inventaris laboratorium">
+  <title>Login — Lab Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+</head>
+<body class="login-page">
+  <main class="login-layout">
+    <section class="login-visual">
+      <a class="brand login-brand" href="/login">
+        <span class="brand-mark">L</span>
+        <span><strong>Lab Inventory</strong><small>Management System</small></span>
+      </a>
+      <div class="visual-copy">
+        <span class="visual-tag"><i></i> LABORATORY MANAGEMENT</span>
+        <h1>Kelola inventaris<br>lebih <em>terorganisir.</em></h1>
+        <p>Kelola data, pantau kondisi, dan pastikan seluruh kebutuhan laboratorium tercatat dengan rapi dalam satu tempat.</p>
+      </div>
+      <div class="visual-footer">SISTEM MANAJEMEN INVENTARIS LABORATORIUM <span>© 2026</span></div>
+      <div class="decor decor-one"></div><div class="decor decor-two"></div>
+    </section>
+
+    <section class="login-form-side">
+      <div class="login-card">
+        <div class="mobile-brand">
+          <span class="brand-mark">L</span><strong>Lab Inventory</strong>
+        </div>
+        <div class="form-heading">
+          <span class="form-icon">↗</span>
+          <p class="eyebrow">SELAMAT DATANG KEMBALI</p>
+          <h2>Login ke akun Anda</h2>
+          <p>Masukkan username dan password untuk melanjutkan.</p>
+        </div>
+
+        <form id="loginForm">
+          <label for="username">Username</label>
+          <div class="field-wrap"><span class="field-icon">♙</span><input id="username" name="username" type="text" placeholder="Masukkan username" autocomplete="username" required></div>
+
+          <label for="password">Password</label>
+          <div class="field-wrap"><span class="field-icon">⌑</span><input id="password" name="password" type="password" placeholder="Masukkan password" autocomplete="current-password" required><button class="password-toggle" type="button" id="togglePassword" aria-label="Tampilkan password">Lihat</button></div>
+
+          <p class="login-error" id="loginError" role="alert"></p>
+          <button class="login-submit" id="loginButton" type="submit"><span>Masuk ke Dashboard</span><b>→</b></button>
+        </form>
+        <p class="login-help">Akses terbatas untuk administrator dan petugas laboratorium.</p>
+      </div>
+      <div class="form-side-footer">Lab Inventory System <span>·</span> Secure Access</div>
+    </section>
+  </main>
+  <script src="/js/login.js"></script>
+</body>
+</html>

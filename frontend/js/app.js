@@ -3,7 +3,16 @@ const $ = (selector) => document.querySelector(selector);
 let editingId = null;
 let toastTimer;
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const auth = await api("/session");
+    $("#currentUsername").textContent = auth.username;
+    $("#userAvatar").textContent = auth.username.slice(0, 2).toUpperCase();
+  } catch {
+    window.location.replace("/login");
+    return;
+  }
+
   $("#today").textContent = new Intl.DateTimeFormat("id-ID", {
     weekday: "long", day: "numeric", month: "long", year: "numeric"
   }).format(new Date());
@@ -11,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDashboard();
   loadItems();
 
+  $("#logoutBtn").addEventListener("click", logout);
   $("#addItemBtn").addEventListener("click", () => openModal());
   $("#closeModal").addEventListener("click", closeModal);
   $("#cancelModal").addEventListener("click", closeModal);
@@ -32,8 +42,21 @@ async function api(url, options = {}) {
     ...options
   });
   const data = await response.json().catch(() => ({}));
+  if (response.status === 401) {
+    window.location.replace("/login");
+    throw new Error(data.error || "Sesi berakhir");
+  }
   if (!response.ok) throw new Error(data.error || "Terjadi kesalahan pada server");
   return data;
+}
+
+async function logout() {
+  try {
+    await api("/logout", { method: "POST" });
+    window.location.replace("/login");
+  } catch (error) {
+    showToast(error.message);
+  }
 }
 
 async function loadDashboard() {
@@ -45,9 +68,7 @@ async function loadDashboard() {
     $("#goodCount").textContent = data.good;
     $("#repairCount").textContent = data.repair;
     $("#needsRepair").textContent = data.repair;
-  } catch (error) {
-    showToast(error.message);
-  }
+  } catch (error) { showToast(error.message); }
 }
 
 async function loadItems() {
@@ -72,57 +93,34 @@ function renderItems(items) {
   $("#inventoryBody").innerHTML = items.map(item => {
     const statusClass = item.condition.toLowerCase().replaceAll(" ", "-");
     return `<tr>
-      <td>${escapeHtml(item.code)}</td>
-      <td>${escapeHtml(item.name)}</td>
-      <td>${escapeHtml(item.category)}</td>
-      <td><span class="stock">${item.quantity} ${escapeHtml(item.unit)}</span></td>
-      <td>${escapeHtml(item.location)}</td>
-      <td><span class="status status-${statusClass}">${escapeHtml(item.condition)}</span></td>
-      <td><div class="actions">
-        <button class="action-btn" data-edit="${item.id}">Edit</button>
-        <button class="action-btn" data-delete="${item.id}">Hapus</button>
-      </div></td>
+      <td>${escapeHtml(item.code)}</td><td>${escapeHtml(item.name)}</td>
+      <td>${escapeHtml(item.category)}</td><td><span class="stock">${item.quantity} ${escapeHtml(item.unit)}</span></td>
+      <td>${escapeHtml(item.location)}</td><td><span class="status status-${statusClass}">${escapeHtml(item.condition)}</span></td>
+      <td><div class="actions"><button class="action-btn" data-edit="${item.id}">Edit</button><button class="action-btn" data-delete="${item.id}">Hapus</button></div></td>
     </tr>`;
   }).join("");
-
-  document.querySelectorAll("[data-edit]").forEach(button => {
-    button.addEventListener("click", () => editItem(Number(button.dataset.edit)));
-  });
-  document.querySelectorAll("[data-delete]").forEach(button => {
-    button.addEventListener("click", () => removeItem(Number(button.dataset.delete)));
-  });
+  document.querySelectorAll("[data-edit]").forEach(button => button.addEventListener("click", () => editItem(Number(button.dataset.edit))));
+  document.querySelectorAll("[data-delete]").forEach(button => button.addEventListener("click", () => removeItem(Number(button.dataset.delete))));
 }
 
 function openModal(item = null) {
   editingId = item ? item.id : null;
   const form = $("#itemForm");
   form.reset();
-  if (item) {
-    Object.entries(item).forEach(([key, value]) => {
-      if (form.elements[key]) form.elements[key].value = value ?? "";
-    });
-  } else {
-    form.elements.quantity.value = 1;
-    form.elements.condition.value = "Baik";
-  }
+  if (item) Object.entries(item).forEach(([key, value]) => {
+    if (form.elements[key]) form.elements[key].value = value ?? "";
+  });
+  else { form.elements.quantity.value = 1; form.elements.condition.value = "Baik"; }
   $("#modalTitle").textContent = item ? "Edit Barang" : "Tambah Barang";
   $("#saveBtn").textContent = item ? "Simpan Perubahan" : "Simpan Barang";
   $("#itemModal").classList.remove("hidden");
   form.elements.code.focus();
 }
-
-function closeModal() {
-  $("#itemModal").classList.add("hidden");
-  editingId = null;
-}
+function closeModal() { $("#itemModal").classList.add("hidden"); editingId = null; }
 
 async function editItem(id) {
-  try {
-    const item = await api(`/items/${id}`);
-    openModal(item);
-  } catch (error) {
-    showToast(error.message);
-  }
+  try { openModal(await api(`/items/${id}`)); }
+  catch (error) { showToast(error.message); }
 }
 
 async function saveItem(event) {
@@ -130,19 +128,15 @@ async function saveItem(event) {
   const formData = new FormData(event.currentTarget);
   const payload = Object.fromEntries(formData.entries());
   payload.quantity = Number(payload.quantity);
-
-  const isEditing = editingId !== null;
+  const wasEditing = editingId !== null;
   try {
-    await api(isEditing ? `/items/${editingId}` : "/items", {
-      method: isEditing ? "PUT" : "POST",
-      body: JSON.stringify(payload)
+    await api(wasEditing ? `/items/${editingId}` : "/items", {
+      method: wasEditing ? "PUT" : "POST", body: JSON.stringify(payload)
     });
     closeModal();
     await Promise.all([loadItems(), loadDashboard()]);
-    showToast(isEditing ? "Data barang diperbarui" : "Barang berhasil ditambahkan");
-  } catch (error) {
-    showToast(error.message);
-  }
+    showToast(wasEditing ? "Data barang diperbarui" : "Barang berhasil ditambahkan");
+  } catch (error) { showToast(error.message); }
 }
 
 async function removeItem(id) {
@@ -151,9 +145,7 @@ async function removeItem(id) {
     await api(`/items/${id}`, { method: "DELETE" });
     await Promise.all([loadItems(), loadDashboard()]);
     showToast("Barang berhasil dihapus");
-  } catch (error) {
-    showToast(error.message);
-  }
+  } catch (error) { showToast(error.message); }
 }
 
 function showToast(message) {
@@ -163,17 +155,12 @@ function showToast(message) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
 }
-
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[char]);
 }
-
 function debounce(callback, delay) {
   let timer;
-  return (...args) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => callback(...args), delay);
-  };
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => callback(...args), delay); };
 }

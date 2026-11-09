@@ -1,6 +1,7 @@
 import sqlite3
 from pathlib import Path
 from contextlib import contextmanager
+from werkzeug.security import generate_password_hash
 
 ROOT = Path(__file__).resolve().parent.parent
 DATABASE_PATH = ROOT / "database" / "inventory.db"
@@ -22,6 +23,14 @@ def get_db():
 def init_db():
     with get_db() as db:
         db.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT NOT NULL UNIQUE,
+                password_hash TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        db.execute("""
             CREATE TABLE IF NOT EXISTS items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 code TEXT NOT NULL UNIQUE,
@@ -38,3 +47,13 @@ def init_db():
                 updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+def create_default_admin(username, password):
+    """Create the initial admin only when the users table is empty."""
+    with get_db() as db:
+        exists = db.execute("SELECT id FROM users LIMIT 1").fetchone()
+        if exists is None:
+            db.execute(
+                "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+                (username, generate_password_hash(password))
+            )
